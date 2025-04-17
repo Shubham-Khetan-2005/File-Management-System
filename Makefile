@@ -1,25 +1,21 @@
+all:objfs
 CC = gcc
-CFLAGS = -Wall -Wextra -g
-CFLAGS += -DDBG
+CFLAGS  = -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=26 -D_GNU_SOURCE -g -Wall 
+LDFLAGS = -pthread -lfuse
+OBJS = objfs.o lib.o objstore.o
+OBJS_CACHED = objfs.o lib.o objstore_cached.o
 
-INCLUDES = -I./src
-LDFLAGS = -lfuse
+%.o : %.c
+	$(CC) -c $(CFLAGS) $< -o $@
+objstore_cached.o : objstore.c
+	$(CC) -c $(CFLAGS) -DCACHE objstore.c -o $@
 
-# List of source files in the src directory.
-SRC = src/lib.c src/objstore.c
-OBJ = $(SRC:.c=.o)
+objfs: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(LDFLAGS)
 
-TARGET = objfs
+objfs_cached: $(OBJS_CACHED)
+	$(CC) -o $@ $(OBJS_CACHED) $(LDFLAGS)
 
-.PHONY: all clean
-
-all: $(TARGET)
-
-$(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDFLAGS)
-
-%.o: %.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
-
+.Phony: clean
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -f *.o; rm -f objfs objfs_cached;

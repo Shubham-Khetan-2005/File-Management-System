@@ -4,7 +4,7 @@ sudo apt-get install fuse
 sudo apt-get install libfuse-dev
  
 Step 2: Clone the Repository
-git clone https://github.com/viporwal/GemOS.git/
+git clone https://github.com/Shubham-Khetan-2005/File-Management-System.git
 cd GemOS/Filesystem
  
 Step 3: Create a Virtual Disk

@@ -1,31 +1,88 @@
-DISK IMAGE SETUP
-----------------
-
-$dd if=/dev/zero of=disk.img bs=1M count=1024   #creates a 1GB disk image
-$mkdir mnt
-
-BUILD
------
-$make
-
- - Note that, by default the logging is enabled (into objfs.log file). Remove -DDBG from the Makefile to 
-   disable logging. 
- - To enable caches, add -DCACHE in the Makefile. Refer the example directory
-
-MOUNT
------
-$./objfs mnt -o use_ino
-$
-
-You can check successful mount using the following command.
-
-$mount | grep objfs
-
-TEST
-----
-
-Go inside the test directory and see the README.
-
-UNMOUNT
--------
+1. Install FUSE Packages:
+Run the following commands to install FUSE and its development libraries:
+sudo apt-get install fuse
+sudo apt-get install libfuse-dev
+ 
+Step 2: Clone the Repository
+git clone https://github.com/viporwal/GemOS.git/
+cd GemOS/Filesystem
+ 
+Step 3: Create a Virtual Disk
+dd if=/dev/zero of=disk.img bs=1M count=1024  
+ 
+Step 4: Compile the Project
+make
+ 
+Step 5: Mount the Filesystem
+mkdir -p mnt
+./objfs mnt -o allow_other
+ 
+Step 6: Run Tests
+Basic File Operations
+Run these commands to test basic functionality:
+# Create a file and write data to it
+echo "Hello, World!" > mnt/myfile.txt
+ 
+# Read the file's contents
+cat mnt/myfile.txt
+ 
+# Rename the file
+mv mnt/myfile.txt mnt/renamed_file.txt
+ 
+# Delete the file
+rm mnt/renamed_file.txt
+ 
+# Verify deletion (should show an empty directory)
+ls mnt
+ 
+Concurrent File Creation
+Test concurrent access by creating multiple files in parallel:
+ 
+for i in {1..100}; do
+ echo "Content $i" > mnt/file_$i.txt &
+done
+wait  
+ 
+# Verify all files were created
+ls mnt | wc -l  
+ 
+# Check contents of a specific file
+cat mnt/file_50.txt
+ 
+Edge Cases
+# Try reading a non-existent file (should throw an error)
+cat mnt/non_existent_file.txt
+ 
+ls -l disk.img
+ 
+See raw disk.img
+hexdump -C disk.img
+ 
+Step 7: Unmount the Filesystem
 fusermount -u mnt
+ 
+For this error
+iitbhu@iitbhu:~/Documents/File_System_OS/Filesystem5$ ./objfs mnt -o use_ino
+Fuse library version 2.9
+main
+fusermount: failed to access mountpoint /home/iitbhu/Documents/File_System_OS/Filesystem5/mnt: Permission denied
+fuse main returned 1
+ 
+unmount, remove mnt, add mnt, mount
+ 
+iitbhu@iitbhu:~/Desktop/File_System_OS/Filesystem3$ ./objfs mnt -o allow_other
+Fuse library version 2.9
+blkdev open: No such file or directory
+Block device initialization failed!
+
+Solution - dd if=/dev/zero of=disk.img bs=1M count=1024
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

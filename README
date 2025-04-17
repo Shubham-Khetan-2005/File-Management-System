@@ -76,13 +76,3 @@ blkdev open: No such file or directory
 Block device initialization failed!
 
 Solution - dd if=/dev/zero of=disk.img bs=1M count=1024
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
